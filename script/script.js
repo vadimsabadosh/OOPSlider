@@ -39,7 +39,7 @@ window.addEventListener('DOMContentLoaded', function () {
         //updateClock();
         setInterval(updateClock, 1000);
         
-    }
+    };
     countTimer('16 december 2020');
     
 
@@ -120,6 +120,29 @@ window.addEventListener('DOMContentLoaded', function () {
         
         })
 
-    }
+    };
     togglePopup();
+
+    const scrolling = () => {
+        const allLinks = document.querySelectorAll('a[href^="#"');
+        //console.log("allLinks", allLinks);
+        allLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = link.getAttribute('href').substring(1);
+                //console.log("href", href);
+                const scrollTarget = document.getElementById(href);
+                const topOffset = 0;
+                const elementPosition = scrollTarget.getBoundingClientRect().top;
+                const offsetPosition = elementPosition - topOffset;
+                window.scrollBy({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+
+            });
+        })
+
+    };
+    scrolling();
 });
