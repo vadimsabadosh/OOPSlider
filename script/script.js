@@ -124,7 +124,7 @@ window.addEventListener('DOMContentLoaded', function () {
     togglePopup();
 
     const scrolling = () => {
-        const allLinks = document.querySelectorAll('a[href^="#"');
+        let allLinks = document.querySelectorAll('a[href^="#"');
         //console.log("allLinks", allLinks);
         allLinks.forEach(link => {
             link.addEventListener('click', (e) => {
