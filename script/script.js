@@ -40,24 +40,46 @@ window.addEventListener('DOMContentLoaded', function () {
         setInterval(updateClock, 1000);
         
     };
-    countTimer('16 december 2020');
+    countTimer('18 december 2020');
     
 
     //Menu 
     const toggleMenu = () => {
-        const btnMenu = document.querySelector('.menu');
-        const btnClose = document.querySelector('.close-btn');
         const menu = document.querySelector('menu');
-        const menuItems = menu.querySelectorAll('ul>li');
+        
+        const activeMenu = () => {
+            menu.classList.add('active-menu');
+        }
 
-        const handlerMenu = () => {
-            menu.classList.toggle('active-menu');        
-        };
+        const deactiveMenu = () => {
+            menu.classList.remove('active-menu');
+        }
 
-        btnMenu.addEventListener('click', handlerMenu);
-        btnClose.addEventListener('click', handlerMenu);
-        menuItems.forEach(item => item.addEventListener('click', handlerMenu));
+        document.body.addEventListener('click', (e) => {
+            let target = e.target;
+            target = target.closest('.menu');
+            if(target){
+                activeMenu();
+            }else if(!target){
+                target = e.target;
+                if(target.closest('.close-btn')){
+                    deactiveMenu();
+                }else if(target.closest('a')){
+                    deactiveMenu();
+                }else{
+                    target = e.target;
+                    target = target.closest('.active-menu');
+                    
+                    if(!target){
+                        deactiveMenu();
+                    }else{
+                        return;
+                    }
+                    
+                }
+            }
 
+        });
     };
     toggleMenu();
 
@@ -68,7 +90,6 @@ window.addEventListener('DOMContentLoaded', function () {
     const togglePopup = () => {
         const popup = document.querySelector('.popup');
         const btnPopup = document.querySelectorAll('.popup-btn');
-        const popupClose = popup.querySelector('.popup-close');
 
         //Функции Анимации
 
@@ -109,40 +130,91 @@ window.addEventListener('DOMContentLoaded', function () {
                     popup.style.display = 'block';
                 }
             });
-        })
-        popupClose.addEventListener('click', () => {
-
-            if(document.documentElement.clientWidth>768){
-                fadeOut(popup)
-            }else{
-                popup.style.display = '';
-            }
+        });
         
-        })
+        popup.addEventListener('click', (e) => {
+            let target = e.target;
+
+            if(target.classList.contains('popup-close')){
+                if(document.documentElement.clientWidth>768){
+                    fadeOut(popup)
+                }else{
+                    popup.style.display = '';
+                }
+            }else{
+                target = target.closest('.popup-content');
+                if(!target){
+                    if(document.documentElement.clientWidth>768){
+                        fadeOut(popup)
+                    }else{
+                        popup.style.display = '';
+                    }
+                }
+            }
+            
+        });
+
 
     };
     togglePopup();
 
+    //Скролл
     const scrolling = () => {
-        let allLinks = document.querySelectorAll('a[href^="#"');
-        //console.log("allLinks", allLinks);
-        allLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const href = link.getAttribute('href').substring(1);
-                //console.log("href", href);
-                const scrollTarget = document.getElementById(href);
-                const topOffset = 0;
-                const elementPosition = scrollTarget.getBoundingClientRect().top;
-                const offsetPosition = elementPosition - topOffset;
-                window.scrollBy({
-                    top: offsetPosition,
-                    behavior: 'smooth'
-                });
 
+
+        const allLinks = document.querySelectorAll('menu>ul>li>a');
+        const scrollBtn = document.querySelector('main>a');
+
+        scrollBtn.addEventListener('click', scroll);
+
+                function scroll(e){
+                    e.preventDefault();
+                    const href = this.getAttribute('href')
+                    const scrollTarget = document.querySelector(href);
+                    const offsetPosition = scrollTarget.offsetTop;
+                    window.scroll({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                };
+            allLinks.forEach(link => {
+                link.addEventListener('click', scroll);
             });
-        })
-
     };
     scrolling();
+
+    // Табы
+    const tabs = () => {
+        const tabHeader = document.querySelector('.service-header');
+        const tabs = tabHeader.querySelectorAll('.service-header-tab');
+        const tabContent = document.querySelectorAll('.service-tab');
+
+        const toggleTabContent = (index) => {
+            for(let i = 0; i < tabContent.length; i++){
+                if(index === i){
+                    tabs[i].classList.add('active');
+                    tabContent[i].classList.remove('d-none');
+                }else{
+                    tabs[i].classList.remove('active');
+                    tabContent[i].classList.add('d-none');
+                }
+            }
+
+        };
+        tabHeader.addEventListener('click', (e) => {
+            let target = e.target;
+                target = target.closest('.service-header-tab');
+                if(target){
+                    tabs.forEach((item, i) => {
+                        if(item === target){
+                            toggleTabContent(i);
+                        }
+                    });
+                }
+            
+            
+        });
+
+    };
+    tabs();
 });
