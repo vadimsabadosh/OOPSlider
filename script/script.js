@@ -219,7 +219,6 @@ window.addEventListener('DOMContentLoaded', function () {
     tabs();
 
     // Слайдер
-
     const silder = () => {
 
         const slider = document.querySelector('.portfolio-content');
@@ -317,4 +316,33 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     };
     silder();
+
+    //Ввод в калькуляторе только цифр
+    const calcNumbers = () => {
+        const inputs = document.querySelectorAll('input.calc-item');
+
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                input.value = input.value.replace(/\D/g, '');
+            });
+        });
+        
+    }
+    calcNumbers();
+
+    //Наша команда
+    const ourTeam = () => {
+        const images = document.querySelectorAll('.command__photo');
+        images.forEach(image => {
+            let oldSrc = image.src;
+            console.log("~ oldSrc", oldSrc);
+            image.addEventListener('mouseover', () => {
+                image.src = image.dataset.img;
+            });
+            image.addEventListener('mouseout', () => {
+                image.src = oldSrc;
+            });
+        });
+    }
+    ourTeam();
 });
