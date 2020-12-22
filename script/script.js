@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
         setInterval(updateClock, 1000);
         
     };
-    countTimer('18 december 2020');
+    countTimer('24 december 2020');
     
 
     //Menu 
@@ -335,7 +335,6 @@ window.addEventListener('DOMContentLoaded', function () {
         const images = document.querySelectorAll('.command__photo');
         images.forEach(image => {
             let oldSrc = image.src;
-            console.log("~ oldSrc", oldSrc);
             image.addEventListener('mouseover', () => {
                 image.src = image.dataset.img;
             });
@@ -345,4 +344,63 @@ window.addEventListener('DOMContentLoaded', function () {
         });
     }
     ourTeam();
+
+    const calc = (price = 100) => {
+        const calcBlock = document.querySelector('.calc-block');
+        const calcType = document.querySelector('.calc-type');
+        const calcSquare = document.querySelector('.calc-square');
+        const calcCount = document.querySelector('.calc-count');
+        const calcDay = document.querySelector('.calc-day');
+        const totalValue = document.getElementById('total');
+
+           
+
+        const countSum = () => {
+            let total = 0, countValue = 1, dayValue = 1;
+            const typeValue = +calcType.options[calcType.selectedIndex].value;
+            let squareValue = +calcSquare.value;
+
+            if(calcCount.value > 1){
+                countValue += (calcCount.value - 1) / 10;
+            }
+
+            if(calcDay.value && calcDay.value < 5){
+                dayValue *= 2;
+            }else if(calcDay.value && calcDay.value < 10){
+                dayValue *= 1.5;
+            }
+
+            if(typeValue && squareValue){
+                total = price * squareValue * typeValue * countValue * dayValue;
+            }
+            totalValue.textContent = total;
+            if(totalValue.textContent > 1){
+                animateValue(total, 1700);
+            }
+        };
+
+        const animateValue = (end, duration) => {
+            
+            let startTimestamp = null;
+            const step = (timestamp) => {
+              if (!startTimestamp) startTimestamp = timestamp;
+              const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+              totalValue.innerHTML = Math.floor(progress * (end - 0) + 0);
+              if (progress < 1) {
+                window.requestAnimationFrame(step);
+              }
+            };
+            window.requestAnimationFrame(step);
+          }
+        
+
+        calcBlock.addEventListener('change', (e) => {
+            let target = e.target;
+            if(target.matches('select') || target.matches('input')){
+                    countSum();
+                    
+            }
+        })
+    };
+    calc();
 });
