@@ -40,7 +40,7 @@ window.addEventListener('DOMContentLoaded', function () {
         setInterval(updateClock, 1000);
         
     };
-    countTimer('24 december 2020');
+    countTimer('25 december 2020');
     
 
     //Menu 
@@ -403,4 +403,80 @@ window.addEventListener('DOMContentLoaded', function () {
         })
     };
     calc();
+
+
+    ///AJAX
+
+    const sendForm = () => {
+
+        const errorMessage = 'Что-то пошло не так....';
+        const loadMessage = 'Загрузка...';
+        const successMessage = 'Сообщение удачно отправлено';
+
+        const forms = document.querySelectorAll('form');
+
+        const statusMessage = document.createElement('div');
+        statusMessage.style.cssText = 'font-size:2rem; color: white;';
+
+        ////сабмит на все формы
+        forms.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                form.append(statusMessage);
+                statusMessage.textContent = loadMessage;
+    
+                const formData = new FormData(form);
+                const body = {};
+    
+                formData.forEach((val, key) => {
+                    body[key] = val;
+                });
+                postData(body, () => {
+                    statusMessage.textContent = successMessage;
+                    form.reset();
+                }, (error) => {
+                    console.error(error);
+                    statusMessage.textContent = errorMessage;
+                    form.reset();
+                });
+            }); 
+        });
+
+            //Отправка на сервер
+        const postData = (body, outputData, errorData) => {
+            const request = new XMLHttpRequest();
+
+            request.addEventListener('readystatechange', () => {
+
+                if(request.readyState !== 4){
+                    return;
+                }
+
+                if(request.status === 200){
+                    outputData();
+                }else{
+                    errorData(request.status);
+                }
+            });
+
+            request.open('POST', './server.php');
+            request.setRequestHeader('Content-Type', 'application/json');
+        
+            request.send(JSON.stringify(body));
+        };
+
+        ///запрет на ввод англ букв и цифр
+        document.addEventListener('input', () => {
+            let allNames = document.querySelectorAll('input[name="user_name"], input[name="user_message"]');
+            
+            for(let i = 0; i<allNames.length; i++){
+                allNames[i].value =  allNames[i].value.replace(/[^А-Яа-яЁё ]/g, '');
+            };
+        })
+
+        ///Маска ввода номера
+        maskPhone('input[name="user_phone"]', '+_ (___) ___-__-__');
+
+    };
+    sendForm();
 });
