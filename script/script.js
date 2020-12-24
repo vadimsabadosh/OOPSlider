@@ -422,9 +422,33 @@ window.addEventListener('DOMContentLoaded', function () {
         forms.forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
-                form.append(statusMessage);
-                statusMessage.textContent = loadMessage;
-    
+                
+                const popupLoader = document.querySelector('.popup_loader');
+                const popupLoaderWrap = document.querySelector('.popup_loader-wrap');
+                const skCircleBounce = document.querySelector('.sk-circle-bounce');
+                const closePopupLoader = document.querySelector('.close_popupLoader');
+
+                popupLoader.style.display = 'flex';
+                closePopupLoader.style.display = 'none';
+
+                //анимация загрузки
+                const spiner = (msg) => {
+                    closePopupLoader.style.display = 'block';
+                    popupLoaderWrap.removeChild(skCircleBounce);
+                    const messDiv = document.createElement('h2');
+                    messDiv.textContent = msg;
+                    popupLoaderWrap.append(messDiv);
+                    closePopupLoader.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        popupLoader.style.display = '';
+                        popupLoaderWrap.removeChild(messDiv);
+                        popupLoaderWrap.append(skCircleBounce);
+                    });
+                    form.reset();
+                };
+
+                
+
                 const formData = new FormData(form);
                 const body = {};
     
@@ -432,12 +456,10 @@ window.addEventListener('DOMContentLoaded', function () {
                     body[key] = val;
                 });
                 postData(body, () => {
-                    statusMessage.textContent = successMessage;
-                    form.reset();
+                    spiner(successMessage);
                 }, (error) => {
                     console.error(error);
-                    statusMessage.textContent = errorMessage;
-                    form.reset();
+                    spiner(errorMessage);
                 });
             }); 
         });
@@ -476,6 +498,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
         ///Маска ввода номера
         maskPhone('input[name="user_phone"]', '+_ (___) ___-__-__');
+
+
+
+        
 
     };
     sendForm();
